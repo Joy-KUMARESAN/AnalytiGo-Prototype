@@ -1,0 +1,517 @@
+/* ============================================================
+   AnalytiGo — global styles
+   Base reset, fonts, scrollbar, keyframes, and hover utilities.
+   Component-level styling is carried inline (1:1 with the design)
+   via the css() helper; hover states live here because the design's
+   base styles are inline and inline wins the cascade — so these
+   :hover rules use !important to take over, and animate through the
+   transitions declared inline on each element.
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0a0b0d;
+  color: #eef1f3;
+  font-family: 'Sora', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: #e8232e;
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0b0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #262c33;
+  border-radius: 8px;
+  border: 3px solid #0a0b0d;
+}
+
+/* ---------- keyframes (from both prototypes) ---------- */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 35, 46, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(232, 35, 46, 0);
+  }
+}
+@keyframes drawLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes growBar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes tickerScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes spinSlow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- hover utilities ---------- */
+.h-signin:hover {
+  color: #e8232e !important;
+}
+.h-lift:hover {
+  transform: translateY(-2px) !important;
+}
+.h-navlink:hover {
+  color: #fff !important;
+}
+.h-glass:hover {
+  background: rgba(255, 255, 255, 0.13) !important;
+}
+.h-outline:hover {
+  background: rgba(232, 35, 46, 0.1) !important;
+}
+.h-card-pickle:hover {
+  transform: translateY(-7px) !important;
+  box-shadow: 0 32px 70px rgba(232, 35, 46, 0.22) !important;
+}
+.h-card-tennis:hover {
+  transform: translateY(-7px) !important;
+  border-color: rgba(232, 35, 46, 0.45) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.42) !important;
+}
+.h-feature:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(232, 35, 46, 0.45) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.42) !important;
+}
+.h-social:hover {
+  color: #e8232e !important;
+}
+.h-footlink:hover {
+  color: #fff !important;
+}
+.h-legal:hover {
+  color: #c4ccd4 !important;
+}
+.h-side:hover {
+  color: #fff !important;
+}
+
+/* ---------- responsive (the design is desktop-first @ 1240px) ---------- */
+@media (max-width: 1080px) {
+  .ag-sport-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .ag-feature-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .ag-kpi-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+@media (max-width: 720px) {
+  .ag-nav-links {
+    display: none !important;
+  }
+  .ag-pad {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+  .ag-sport-grid,
+  .ag-feature-grid,
+  .ag-kpi-grid,
+  .ag-split,
+  .ag-foot-grid,
+  .ag-dash,
+  .ag-preview-body {
+    grid-template-columns: 1fr !important;
+  }
+  .ag-hero-stats {
+    display: none !important;
+  }
+  .ag-h1 {
+    font-size: 40px !important;
+  }
+  .ag-h2 {
+    font-size: 34px !important;
+  }
+}
+
+/* ============================================================
+   Cinematic home intro — full-screen video first, then a
+   staggered, progressive reveal of the UI on first interaction.
+   The root toggles `.ag-on` once the user clicks / scrolls / taps.
+   ============================================================ */
+
+/* fixed background video, sits behind everything and parallaxes */
+.ag-video-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transform: scale(1.14);
+  transition: transform 1.6s cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+.ag-on .ag-video-wrap {
+  transform: scale(1);
+}
+.ag-video-wrap video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 35%;
+}
+
+/* intro veil — gentle darkening so the prompt reads; clears on start */
+.ag-intro-veil {
+  transition: opacity 0.9s ease;
+}
+.ag-on .ag-intro-veil {
+  opacity: 0;
+}
+
+/* hero readability scrim — absolute inside the hero, fades in on start */
+.ag-heroscrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background: linear-gradient(
+      90deg,
+      rgba(8, 9, 11, 0.94) 0%,
+      rgba(8, 9, 11, 0.8) 28%,
+      rgba(8, 9, 11, 0.4) 54%,
+      rgba(8, 9, 11, 0.08) 80%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 9, 11, 0.5) 0%,
+      transparent 30%,
+      transparent 60%,
+      rgba(8, 9, 11, 0.92) 100%
+    );
+}
+.ag-on .ag-heroscrim {
+  opacity: 1;
+}
+
+/* "click anywhere to begin" prompt */
+.ag-prompt {
+  position: fixed;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+.ag-on .ag-prompt {
+  opacity: 0;
+  transform: translateX(-50%) translateY(26px);
+  pointer-events: none;
+}
+.ag-prompt-ring {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  animation: introGlow 2.6s ease-out infinite;
+}
+.ag-prompt-text {
+  font: 600 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.34em;
+  color: rgba(255, 255, 255, 0.85);
+  animation: promptPulse 2.6s ease-in-out infinite;
+}
+.ag-chev {
+  opacity: 0.7;
+  animation: chevBob 1.8s ease-in-out infinite;
+}
+@keyframes introGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(232, 35, 46, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(232, 35, 46, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(232, 35, 46, 0);
+  }
+}
+@keyframes promptPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes chevBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+
+/* reveal primitives — hidden until the `.ag-on` ancestor flips on.
+   Per-element transition-delay (set inline) creates the stagger. */
+.ag-rv {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s cubic-bezier(0.16, 0.84, 0.44, 1),
+    transform 1.05s cubic-bezier(0.16, 0.84, 0.44, 1), filter 1s ease;
+  will-change: opacity, transform, filter;
+}
+.ag-rv-top {
+  transform: translateY(-28px);
+}
+.ag-rv-left {
+  transform: translateX(-48px);
+  filter: blur(8px);
+}
+.ag-rv-up {
+  transform: translateY(56px);
+  filter: blur(6px);
+}
+.ag-on .ag-rv {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  pointer-events: auto;
+}
+
+@media (max-width: 1024px) {
+  .ag-home-stats {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ag-video-wrap {
+    transform: none !important;
+    transition: none;
+  }
+  .ag-rv {
+    transition: opacity 0.4s ease;
+  }
+  .ag-rv-top,
+  .ag-rv-left,
+  .ag-rv-up {
+    transform: none;
+    filter: none;
+  }
+}
+
+/* ============================================================
+   Landing hero — cinematic, Netflix / Apple TV+ sports-doc feel:
+   a fade-from-black open, a slow ken-burns drift, a graded look,
+   vignette + cinematic framing, and an elegant title rise.
+   Scoped to `.lh-*` so the home page is unaffected.
+   ============================================================ */
+@keyframes lhKen {
+  0% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1.17) translateY(-1.5%);
+  }
+}
+@keyframes lhFadeBlack {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes lhBarsIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes lhRise {
+  0% {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(7px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+/* fixed, full-frame background video — shows the entire composition (contain,
+   no zoom/crop) and stays put as a continuous backdrop while the page scrolls */
+.lh-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: #06070a;
+}
+.lh-bg video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* sharp full-composition layer (contain = no crop / zoom / distortion) */
+.lh-bg .lh-video {
+  object-fit: contain;
+  object-position: center;
+  filter: contrast(1.05) saturate(1.06);
+}
+/* blurred edge-fill behind the sharp layer — covers any letterbox / pillarbox
+   gap so the backdrop reaches edge-to-edge on every aspect ratio (no black bars),
+   while the full composition stays intact on top. */
+.lh-bg .lh-bg-fill {
+  object-fit: cover;
+  transform: scale(1.1);
+  filter: blur(42px) brightness(0.78) saturate(1.05);
+}
+.lh-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: radial-gradient(130% 120% at 50% 42%, transparent 58%, rgba(0, 0, 0, 0.36) 100%);
+}
+.lh-cinebars {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    transparent 17%,
+    transparent 82%,
+    rgba(0, 0, 0, 0.64) 100%
+  );
+  animation: lhBarsIn 2.4s ease 0.5s forwards;
+}
+.lh-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: #000;
+  pointer-events: none;
+  animation: lhFadeBlack 1.8s ease forwards;
+}
+.lh-rise {
+  animation: lhRise 1.5s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lh-video {
+    animation: none;
+  }
+  .lh-curtain {
+    animation: lhFadeBlack 0.5s ease forwards;
+  }
+  .lh-cinebars {
+    animation: lhBarsIn 0.5s ease forwards;
+  }
+  .lh-rise {
+    animation: lhRise 0.4s ease both;
+  }
+}
+
+/* ---------- Tennis page accent hovers (teal theme via --tc / --ta) ---------- */
+.ht-signin:hover {
+  color: var(--ta) !important;
+}
+.ht-outline:hover {
+  background: rgba(var(--tc), 0.12) !important;
+}
+.ht-feature:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(var(--tc), 0.5) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.42) !important;
+}
