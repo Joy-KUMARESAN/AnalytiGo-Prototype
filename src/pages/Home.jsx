@@ -95,28 +95,39 @@ export default function Home() {
     if (p && p.catch) p.catch(() => {})
   }, [])
 
-  // intro: lock scroll and wait for the first interaction
+  // intro: lock scroll and wait for the first interaction (click / scroll / key / tap)
   useEffect(() => {
     if (started) return
+    document.documentElement.style.overflow = 'hidden'
     document.body.style.overflow = 'hidden'
-    const begin = () => setStarted(true)
-    const opts = { passive: true }
-    window.addEventListener('wheel', begin, opts)
-    window.addEventListener('touchmove', begin, opts)
+    const begin = () => {
+      setStarted(true)
+      window.scrollTo(0, 0) // always enter at the very top of the hero
+    }
+    // scrolling must behave exactly like clicking: block the scroll so the page
+    // never moves, then trigger the reveal (works on desktop wheel + mobile touch)
+    const onScroll = (e) => {
+      e.preventDefault()
+      begin()
+    }
+    window.addEventListener('wheel', onScroll, { passive: false })
+    window.addEventListener('touchmove', onScroll, { passive: false })
     window.addEventListener('keydown', begin)
     window.addEventListener('pointerdown', begin)
     return () => {
-      window.removeEventListener('wheel', begin)
-      window.removeEventListener('touchmove', begin)
+      window.removeEventListener('wheel', onScroll)
+      window.removeEventListener('touchmove', onScroll)
       window.removeEventListener('keydown', begin)
       window.removeEventListener('pointerdown', begin)
     }
   }, [started])
 
-  // on reveal: restore scroll and run the stat count-ups
+  // on reveal: restore scroll, snap to the very top, and run the stat count-ups
   useEffect(() => {
     if (!started) return
+    document.documentElement.style.overflow = ''
     document.body.style.overflow = ''
+    window.scrollTo(0, 0)
     const t = setTimeout(() => {
       heroRef.current
         ?.querySelectorAll('[data-count]:not([data-done])')
@@ -130,6 +141,7 @@ export default function Home() {
 
   // safety: always restore scroll on unmount
   useEffect(() => () => {
+    document.documentElement.style.overflow = ''
     document.body.style.overflow = ''
   }, [])
 
@@ -138,10 +150,10 @@ export default function Home() {
 
   return (
     <div className={started ? 'ag-home ag-on' : 'ag-home'} style={css('position:relative;background:#0a0b0d')}>
-      {/* fixed background montage */}
+      {/* fixed background intro video */}
       <div className="ag-video-wrap">
-        <video ref={videoRef} autoPlay muted loop playsInline preload="auto" poster="/assets/montage-poster.jpg" aria-hidden="true">
-          <source src="/assets/montage.mp4" type="video/mp4" />
+        <video ref={videoRef} autoPlay muted loop playsInline preload="auto" poster="/assets/home-intro-poster.jpg" aria-hidden="true">
+          <source src="/assets/home-intro.mp4" type="video/mp4" />
         </video>
       </div>
       {/* intro veil (clears on start) + film grain */}
