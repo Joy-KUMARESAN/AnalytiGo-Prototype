@@ -246,11 +246,10 @@ button {
   transition: opacity 1.2s ease;
   background: linear-gradient(
       90deg,
-      rgba(8, 9, 11, 0.94) 0%,
-      rgba(8, 9, 11, 0.8) 28%,
-      rgba(8, 9, 11, 0.4) 54%,
-      rgba(8, 9, 11, 0.08) 80%,
-      transparent 100%
+      rgba(8, 9, 11, 0.55) 0%,
+      rgba(8, 9, 11, 0.32) 26%,
+      rgba(8, 9, 11, 0.1) 52%,
+      transparent 74%
     ),
     linear-gradient(
       180deg,

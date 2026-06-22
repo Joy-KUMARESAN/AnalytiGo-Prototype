@@ -188,23 +188,24 @@ export default function Home() {
         </nav>
 
         {/* hero copy — left, staggered from the left */}
-        <div className="ag-pad" style={css('position:relative;z-index:2;flex:1;display:flex;align-items:center;width:100%;max-width:1240px;margin:0 auto;padding:18px 48px 40px')}>
-          <div style={css('max-width:620px;text-align:left')}>
-            <div className="ag-rv ag-rv-left" style={rv('display:inline-flex;align-items:center;gap:9px;padding:8px 16px;border-radius:999px;border:1px solid rgba(232,35,46,.45);background:rgba(232,35,46,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.35);margin-bottom:24px', '.15s')}>
-              <span style={css('width:7px;height:7px;border-radius:50%;background:#e8232e;box-shadow:0 0 10px #e8232e')} />
-              <span style={css("font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ff5a62")}>MULTI-SPORT ANALYTICS PLATFORM</span>
+        <div className="ag-pad" style={css('position:relative;z-index:2;flex:1;display:flex;align-items:flex-end;width:100%;max-width:1240px;margin:0 auto;padding:18px 48px 48px')}>
+          {/* compact hero content card — premium glass overlay, bottom-left */}
+          <div className="ag-rv" style={{ ...css('max-width:430px;text-align:left;padding:24px 28px 28px;border-radius:18px;background:rgba(13,15,19,.55);backdrop-filter:blur(22px) saturate(1.08);-webkit-backdrop-filter:blur(22px) saturate(1.08);border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 64px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.07)'), transitionDelay: '.1s' }}>
+            <div className="ag-rv ag-rv-left" style={rv('display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:999px;border:1px solid rgba(232,35,46,.45);background:rgba(232,35,46,.16);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 6px 24px rgba(0,0,0,.35);margin-bottom:16px', '.15s')}>
+              <span style={css('width:6px;height:6px;border-radius:50%;background:#e8232e;box-shadow:0 0 10px #e8232e')} />
+              <span style={css("font:600 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#ff5a62")}>MULTI-SPORT ANALYTICS PLATFORM</span>
             </div>
-            <h1 className="ag-rv ag-rv-left ag-h1" style={rv("font:800 60px/1.04 'Sora';letter-spacing:-.03em;margin:0 0 18px;text-wrap:balance;text-shadow:0 2px 32px rgba(0,0,0,.75),0 1px 4px rgba(0,0,0,.6)", '.27s')}>
-              Smarter analytics for <span style={css('color:#ff3b44;text-shadow:0 0 30px rgba(232,35,46,.6)')}>every sport</span> you play
+            <h1 className="ag-rv ag-rv-left" style={rv("font:800 34px/1.12 'Sora';letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance;text-shadow:0 1px 12px rgba(0,0,0,.5)", '.27s')}>
+              Smarter analytics for <span style={css('color:#ff3b44;text-shadow:0 0 24px rgba(232,35,46,.5)')}>every sport</span> you play
             </h1>
-            <p className="ag-rv ag-rv-left" style={rv("font:500 18px/1.6 'Sora';color:#e7ebee;max-width:480px;margin:0 0 32px;text-shadow:0 1px 16px rgba(0,0,0,.8)", '.39s')}>
+            <p className="ag-rv ag-rv-left" style={rv("font:400 14px/1.55 'Sora';color:#e7ebee;margin:0 0 22px", '.39s')}>
               AI-powered performance insights, shot tracking, and advanced visualizations — built for the way each game is played.
             </p>
-            <div className="ag-rv ag-rv-left" style={rv('display:flex;align-items:center;gap:16px;flex-wrap:wrap', '.51s')}>
-              <button onClick={scrollToSports} className="h-lift" style={css("display:inline-flex;align-items:center;gap:10px;font:700 16px/1 'Sora';color:#fff;background:#e8232e;border:none;padding:17px 30px;border-radius:13px;cursor:pointer;transition:transform .15s;box-shadow:0 14px 34px rgba(232,35,46,.42)")}>Choose Your Sport ↓</button>
-              <button className="h-glass" style={css("display:inline-flex;align-items:center;gap:13px;font:600 15px/1 'Sora';color:#eef1f3;padding:10px 22px 10px 11px;border-radius:13px;background:rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);cursor:pointer;transition:background .15s")}>
-                <span style={css('width:36px;height:36px;border-radius:50%;background:#e8232e;display:flex;align-items:center;justify-content:center;animation:glowPulse 2.4s infinite')}>
-                  <span style={css('width:0;height:0;border-style:solid;border-width:6px 0 6px 10px;border-color:transparent transparent transparent #fff;margin-left:3px')} />
+            <div className="ag-rv ag-rv-left" style={rv('display:flex;align-items:center;gap:12px;flex-wrap:wrap', '.51s')}>
+              <button onClick={scrollToSports} className="h-lift" style={css("display:inline-flex;align-items:center;gap:8px;font:700 14px/1 'Sora';color:#fff;background:#e8232e;border:none;padding:13px 22px;border-radius:11px;cursor:pointer;transition:transform .15s;box-shadow:0 12px 28px rgba(232,35,46,.42)")}>Choose Your Sport ↓</button>
+              <button className="h-glass" style={css("display:inline-flex;align-items:center;gap:10px;font:600 13px/1 'Sora';color:#eef1f3;padding:8px 18px 8px 9px;border-radius:11px;background:rgba(255,255,255,.08);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.18);cursor:pointer;transition:background .15s")}>
+                <span style={css('width:30px;height:30px;border-radius:50%;background:#e8232e;display:flex;align-items:center;justify-content:center;animation:glowPulse 2.4s infinite')}>
+                  <span style={css('width:0;height:0;border-style:solid;border-width:5px 0 5px 8px;border-color:transparent transparent transparent #fff;margin-left:2px')} />
                 </span>
                 Watch Trailer
               </button>
