@@ -50,24 +50,6 @@ export default function TennisView({ navRef, videoRef, openDashboard }) {
         <div className="lh-cinebars" />
         <div className="lh-curtain" />
 
-        {/* floating stat overlay */}
-        <div className="ag-hero-stats lh-rise" style={{ ...css('position:absolute;right:48px;bottom:120px;display:flex;flex-direction:column;gap:12px;z-index:3'), animationDelay: '1.15s' }}>
-          <div style={css('display:flex;gap:12px')}>
-            <div style={css('min-width:150px;padding:16px 18px;border-radius:14px;background:rgba(16,19,22,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);animation:floaty 6s ease-in-out infinite')}>
-              <div data-count="2.4" data-decimals="1" data-suffix="M" style={css("font:700 26px/1 'Sora';color:var(--ta-bright)")}>2.4M</div>
-              <div style={css("font:500 11px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;color:#9aa3ad;margin-top:6px")}>MATCHES ANALYZED</div>
-            </div>
-            <div style={css('min-width:150px;padding:16px 18px;border-radius:14px;background:rgba(16,19,22,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);animation:floaty 6s ease-in-out infinite .8s')}>
-              <div data-count="180" data-suffix="K" style={css("font:700 26px/1 'Sora'")}>180K</div>
-              <div style={css("font:500 11px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;color:#9aa3ad;margin-top:6px")}>ACTIVE PLAYERS</div>
-            </div>
-          </div>
-          <div style={css('padding:16px 18px;border-radius:14px;background:rgba(16,19,22,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);animation:floaty 6s ease-in-out infinite 1.6s')}>
-            <div data-count="5.6" data-decimals="1" data-suffix="M" style={css("font:700 26px/1 'Sora'")}>5.6M</div>
-            <div style={css("font:500 11px/1.3 'JetBrains Mono',monospace;letter-spacing:.08em;color:#9aa3ad;margin-top:6px")}>PERFORMANCE REPORTS GENERATED</div>
-          </div>
-        </div>
-
         {/* hero content bottom-left */}
         <div className="ag-pad lh-rise" style={{ ...css('position:relative;z-index:4;max-width:600px;padding:0 48px 72px'), animationDelay: '.95s' }}>
           <div style={css('display:inline-flex;align-items:center;gap:9px;padding:7px 14px;border-radius:999px;border:1px solid rgba(var(--tc),.4);background:rgba(var(--tc),.1);margin-bottom:26px')}>
@@ -78,7 +60,7 @@ export default function TennisView({ navRef, videoRef, openDashboard }) {
             Elite <span style={css('color:var(--ta-bright);text-shadow:0 0 30px rgba(var(--tc),.6)')}>Tennis</span> Analytics
           </h1>
           <p style={css("font:400 17px/1.6 'Sora';color:#dfe5ea;max-width:460px;margin:0 0 30px;text-shadow:0 1px 14px rgba(0,0,0,.6)")}>
-            Transform every match into actionable insights with AI-powered tennis analytics, serve intelligence, shot tracking, player performance trends, and advanced visualizations.
+            Transform every match into actionable insights with AI-powered tennis analytics, serve intelligence, return analysis, rally performance, court coverage, and match intelligence.
           </p>
           <div style={css('display:flex;align-items:center;gap:16px;flex-wrap:wrap')}>
             <button onClick={openDashboard} className="h-lift" style={css("display:inline-flex;align-items:center;gap:10px;font:700 16px/1 'Sora';color:#06201d;background:var(--ta);border:none;padding:18px 30px;border-radius:13px;cursor:pointer;transition:transform .15s;box-shadow:0 14px 34px rgba(var(--tc),.4)")}>View Analytics →</button>
