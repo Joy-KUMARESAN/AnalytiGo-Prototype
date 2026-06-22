@@ -1,33 +1,23 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { css } from '../utils/css.js'
 import { useCountUp } from '../hooks/useCountUp.js'
-import { useReveal } from '../hooks/useReveal.js'
 import { useStickyNav } from '../hooks/useStickyNav.js'
 import TennisView from '../components/TennisView.jsx'
-import TennisDashboard from '../components/TennisDashboard.jsx'
 
-// Tennis page — the Tennis counterpart of the Landing (Pickleball) experience.
-// Identical structure, animations and behaviour; only the content, the
-// background video, and the accent palette (teal, derived from the Tennis
-// video) differ. The teal theme is exposed as CSS variables on the root so
-// every descendant can reference var(--ta) / rgba(var(--tc), x).
+// Tennis page — a single hero screen. Teal theme is exposed as CSS variables on
+// the root so every descendant can reference var(--ta) / rgba(var(--tc), x).
 export default function Tennis() {
-  const [screen, setScreen] = useState('landing')
   const rootRef = useRef(null)
   const navRef = useRef(null)
   const videoRef = useRef(null)
 
-  const isLanding = screen === 'landing'
-
-  // Always open /tennis at the very top — never inherit scroll from the
-  // previous route (e.g. the homepage).
+  // Always open at the very top — never inherit scroll from the previous route.
   useLayoutEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  useCountUp(rootRef, [screen])
-  useReveal(rootRef, [screen])
-  useStickyNav(navRef, [screen])
+  useCountUp(rootRef, [])
+  useStickyNav(navRef, [])
 
   // Keep the background video reliably playing (autoplay can be refused; loop on end).
   useEffect(() => {
@@ -48,24 +38,7 @@ export default function Tennis() {
     const p = v.play()
     if (p && p.catch) p.catch(() => {})
     return () => v.removeEventListener('ended', onEnded)
-  }, [screen])
-
-  const openDashboard = () => {
-    setScreen('dashboard')
-    try {
-      window.scrollTo(0, 0)
-    } catch {
-      /* ignore */
-    }
-  }
-  const closeDashboard = () => {
-    setScreen('landing')
-    try {
-      window.scrollTo(0, 0)
-    } catch {
-      /* ignore */
-    }
-  }
+  }, [])
 
   return (
     <div
@@ -77,11 +50,7 @@ export default function Tennis() {
       {/* fine noise overlay */}
       <div style={css('position:fixed;inset:0;z-index:200;pointer-events:none;opacity:.022;mix-blend-mode:overlay;background-image:radial-gradient(rgba(255,255,255,.9) .5px,transparent .6px);background-size:3px 3px')} />
 
-      {isLanding ? (
-        <TennisView navRef={navRef} videoRef={videoRef} openDashboard={openDashboard} />
-      ) : (
-        <TennisDashboard onBack={closeDashboard} />
-      )}
+      <TennisView navRef={navRef} videoRef={videoRef} openDashboard={() => {}} />
     </div>
   )
 }
