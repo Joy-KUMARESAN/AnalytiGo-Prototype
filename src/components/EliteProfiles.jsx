@@ -1,0 +1,341 @@
+import { useRef, useState } from 'react'
+import { css } from '../utils/css.js'
+
+// Elite Athlete Profiles — a premium 3D coverflow carousel of player cards with
+// drag/swipe, infinite looping, hover lift, and a cinematic spotlight modal that
+// flips the selected card in 3D to reveal detailed analytics.
+
+const ICONS = {
+  basketball: (
+    <svg viewBox="0 0 24 24" fill="none" width="100%" height="100%">
+      <circle cx="12" cy="12" r="9.2" stroke="rgba(255,255,255,.9)" strokeWidth="1.1" />
+      <path d="M3 12h18M12 2.8v18.4M5.6 5.6c4 3.2 8.8 3.2 12.8 0M5.6 18.4c4-3.2 8.8-3.2 12.8 0" stroke="rgba(255,255,255,.9)" strokeWidth="0.9" />
+    </svg>
+  ),
+  volleyball: (
+    <svg viewBox="0 0 24 24" fill="none" width="100%" height="100%">
+      <circle cx="12" cy="12" r="9.2" stroke="rgba(255,255,255,.9)" strokeWidth="1.1" />
+      <path d="M12 2.8c-3.2 5.4-3.2 10.6 0 18.4M3.6 8c5.2 2.2 11.2 1.2 15.4-3.2M4 18.4c3.1-4.4 9.2-6.4 15.4-4.4" stroke="rgba(255,255,255,.9)" strokeWidth="0.9" />
+    </svg>
+  ),
+}
+
+const PLAYERS = [
+  {
+    name: 'Marcus Vale', sport: 'Pickleball', accent: '#e8232e', rgb: '232,35,46',
+    rating: 96, winRate: 84, ranking: 2, image: '/assets/card-pickleball.jpg',
+    strengths: ['Kitchen Play', 'Third-Shot Drop', 'Hand Speed'],
+    weaknesses: ['Deep Lobs', 'Backhand Dinks'],
+    bars: [['Dinking', 95], ['Speed', 91], ['Net Play', 93], ['Serve', 86]],
+    form: [6, 7, 5, 8, 7, 9, 8], record: ['W', 'W', 'L', 'W', 'W'],
+  },
+  {
+    name: 'Diego Rivera', sport: 'Tennis', accent: '#0fb6a4', rgb: '15,182,164',
+    rating: 94, winRate: 82, ranking: 4, image: '/assets/card-tennis.jpg',
+    video: '/assets/tennis-card.mp4', popupImage: '/assets/tennis-popup.jpg',
+    popupStats: [['Serve Accuracy', '92%'], ['Court Coverage', '88%'], ['Rally Consistency', '90%']],
+    strengths: ['Serve Accuracy', 'Court Coverage', 'Rally Consistency'],
+    weaknesses: ['Second Serve', 'Net Approach'],
+    bars: [['Serve', 92], ['Return', 86], ['Speed', 88], ['Stamina', 90]],
+    form: [5, 6, 7, 6, 8, 7, 9], record: ['W', 'L', 'W', 'W', 'W'],
+  },
+  {
+    name: 'Andre Cole', sport: 'Basketball', accent: '#ff7a3c', rgb: '255,122,60',
+    rating: 92, winRate: 78, ranking: 6, image: null, icon: 'basketball',
+    strengths: ['Three-Point Range', 'Court Vision', 'Clutch Scoring'],
+    weaknesses: ['Free Throws', 'Perimeter Defense'],
+    bars: [['Scoring', 93], ['Vision', 88], ['Speed', 90], ['Defense', 82]],
+    form: [7, 5, 8, 6, 7, 8, 9], record: ['W', 'W', 'W', 'L', 'W'],
+  },
+  {
+    name: 'Lena Petrova', sport: 'Volleyball', accent: '#8b5cf6', rgb: '139,92,246',
+    rating: 90, winRate: 81, ranking: 5, image: null, icon: 'volleyball',
+    strengths: ['Spike Power', 'Block Timing', 'Serve Precision'],
+    weaknesses: ['Back-Row Defense', 'Quick Sets'],
+    bars: [['Attack', 94], ['Block', 89], ['Serve', 87], ['Agility', 88]],
+    form: [6, 7, 6, 8, 7, 9, 8], record: ['W', 'W', 'L', 'W', 'W'],
+  },
+]
+
+const PARTICLES = [
+  { l: '8%', t: '18%', s: 6, d: '0s' },
+  { l: '92%', t: '26%', s: 4, d: '1.2s' },
+  { l: '14%', t: '78%', s: 5, d: '.6s' },
+  { l: '88%', t: '70%', s: 7, d: '1.8s' },
+  { l: '50%', t: '4%', s: 4, d: '.9s' },
+]
+
+function Visual({ p, popup }) {
+  if (popup && p.popupImage) {
+    return <img className="ep-img" src={p.popupImage} alt={p.name} draggable="false" style={css('object-position:center 12%')} />
+  }
+  if (!popup && p.video) {
+    return (
+      <video className="ep-img" autoPlay muted loop playsInline preload="auto" poster={p.image} aria-hidden="true">
+        <source src={p.video} type="video/mp4" />
+      </video>
+    )
+  }
+  if (p.image) {
+    return <img className="ep-img" src={p.image} alt={p.name} draggable="false" />
+  }
+  return (
+    <div className="ep-img" style={css(`background:radial-gradient(circle at 50% 30%,rgba(${p.rgb},.42),#0d1015 70%)`)}>
+      <span style={css('position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:118px;height:118px;opacity:.92')}>{ICONS[p.icon]}</span>
+    </div>
+  )
+}
+
+function Front({ p, big }) {
+  const stats =
+    big && p.popupStats
+      ? [['RATING', p.rating], ['WIN RATE', p.winRate + '%'], ...p.popupStats.map(([l, v]) => [l.toUpperCase(), v]), ['RANKING', '#' + p.ranking]]
+      : null
+  return (
+    <>
+      <Visual p={p} popup={big} />
+      <div className="ep-shine" />
+      <div style={css('position:absolute;top:14px;left:14px;right:14px;z-index:2;display:flex;align-items:flex-start;justify-content:space-between')}>
+        <span style={css(`font:700 10px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#fff;background:${p.accent};padding:6px 10px;border-radius:7px`)}>{p.sport.toUpperCase()}</span>
+        <span style={css('display:flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:13px;background:rgba(8,9,11,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18)')}>
+          <span style={css(`font:800 ${big ? '23' : '20'}px/1 'Sora';color:${p.accent}`)}>{p.rating}</span>
+          <span style={css("font:600 6px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#9aa3ad;margin-top:2px")}>RATING</span>
+        </span>
+      </div>
+      <div style={css('position:absolute;left:18px;right:18px;bottom:18px;z-index:2;text-align:left')}>
+        <div style={css(`font:800 ${big ? '30' : '25'}px/1.05 'Sora';letter-spacing:-.02em;margin-bottom:${stats ? '12' : '9'}px`)}>{p.name}</div>
+        {stats ? (
+          <div style={css('display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;padding:15px 17px;border-radius:14px;background:rgba(8,10,13,.52);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.12)')}>
+            {stats.map(([l, v]) => (
+              <div key={l}>
+                <div style={css("font:500 9px/1 'JetBrains Mono',monospace;letter-spacing:.06em;color:#9aa3ad;margin-bottom:5px")}>{l}</div>
+                <div style={css(`font:700 18px/1 'Sora';color:${p.accent}`)}>{v}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div style={css('display:flex;align-items:center;gap:16px;margin-bottom:13px')}>
+              <span style={css("font:700 15px/1 'Sora';color:#fff")}>{p.winRate}%<span style={css("font:500 9px/1 'JetBrains Mono',monospace;color:#9aa3ad;margin-left:5px")}>WIN</span></span>
+              <span style={css(`font:700 15px/1 'Sora';color:${p.accent}`)}>#{p.ranking}<span style={css("font:500 9px/1 'JetBrains Mono',monospace;color:#9aa3ad;margin-left:5px")}>RANK</span></span>
+            </div>
+            <div style={css('display:flex;flex-wrap:wrap;gap:6px')}>
+              {p.strengths.slice(0, big ? 3 : 2).map((s) => (
+                <span key={s} style={css('font:600 9px/1 \'JetBrains Mono\',monospace;letter-spacing:.03em;color:#cfd5db;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);padding:5px 8px;border-radius:6px')}>{s}</span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  )
+}
+
+function Back({ p }) {
+  return (
+    <div style={css('position:absolute;inset:0;padding:26px 24px;display:flex;flex-direction:column')}>
+      <div style={css('display:flex;align-items:center;justify-content:space-between;margin-bottom:4px')}>
+        <span style={css(`font:800 20px/1 'Sora';letter-spacing:-.02em`)}>{p.name}</span>
+        <span style={css(`font:700 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#fff;background:${p.accent};padding:5px 8px;border-radius:6px`)}>{p.sport.toUpperCase()}</span>
+      </div>
+      <div style={css("font:500 10px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:#6b7480;margin-bottom:18px")}>PERFORMANCE ANALYTICS</div>
+
+      {/* stat bars */}
+      <div style={css('display:flex;flex-direction:column;gap:11px;margin-bottom:20px')}>
+        {p.bars.map(([label, val]) => (
+          <div key={label}>
+            <div style={css("display:flex;justify-content:space-between;font:600 10px/1 'JetBrains Mono',monospace;color:#9aa3ad;margin-bottom:5px")}>
+              <span>{label.toUpperCase()}</span>
+              <span style={css(`color:${p.accent}`)}>{val}</span>
+            </div>
+            <div style={css('height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden')}>
+              <div style={css(`height:100%;width:${val}%;border-radius:4px;background:linear-gradient(90deg,${p.accent},rgba(${p.rgb},.6))`)} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* recent form */}
+      <div style={css("font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7480;margin-bottom:9px")}>RECENT FORM</div>
+      <div style={css('display:flex;align-items:flex-end;gap:6px;height:42px;margin-bottom:18px')}>
+        {p.form.map((v, i) => (
+          <div key={i} style={css(`flex:1;height:${v * 10}%;border-radius:3px 3px 0 0;background:linear-gradient(180deg,${p.accent},rgba(${p.rgb},.35))`)} />
+        ))}
+      </div>
+
+      {/* record */}
+      <div style={css('display:flex;align-items:center;gap:10px;margin-bottom:16px')}>
+        <span style={css("font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7480")}>LAST 5</span>
+        <div style={css('display:flex;gap:5px')}>
+          {p.record.map((r, i) => (
+            <span key={i} style={css(`width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font:700 10px/1 'JetBrains Mono',monospace;color:${r === 'W' ? '#06140f' : '#fff'};background:${r === 'W' ? '#46d18a' : '#e0573a'}`)}>{r}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* watch-outs */}
+      <div style={css('margin-top:auto')}>
+        <div style={css("font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7480;margin-bottom:9px")}>WATCH-OUTS</div>
+        <div style={css('display:flex;flex-wrap:wrap;gap:6px')}>
+          {p.weaknesses.map((w) => (
+            <span key={w} style={css('font:600 9px/1 \'JetBrains Mono\',monospace;color:#e0a08f;background:rgba(224,87,58,.12);border:1px solid rgba(224,87,58,.3);padding:5px 8px;border-radius:6px')}>{w}</span>
+          ))}
+        </div>
+      </div>
+      <div style={css(`font:600 9px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:${p.accent};margin-top:16px;text-align:center;opacity:.85`)}>↺ TAP TO FLIP BACK</div>
+    </div>
+  )
+}
+
+export default function EliteProfiles() {
+  const N = PLAYERS.length
+  const [pos, setPos] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [selected, setSelected] = useState(null)
+  const [flipped, setFlipped] = useState(false)
+  const drag = useRef({ active: false, startX: 0, startPos: 0, moved: 0, lastX: 0, raf: 0 })
+
+  const active = ((Math.round(pos) % N) + N) % N
+  const offsetOf = (i) => {
+    let o = i - pos
+    while (o > N / 2) o -= N
+    while (o < -N / 2) o += N
+    return o
+  }
+
+  const go = (dir) => {
+    setDragging(false)
+    setPos((p) => Math.round(p) + dir)
+  }
+  const goTo = (i) => {
+    setDragging(false)
+    setPos((p) => {
+      let o = i - p
+      while (o > N / 2) o -= N
+      while (o < -N / 2) o += N
+      return Math.round(p + o)
+    })
+  }
+
+  const onDown = (e) => {
+    // let the nav arrows / dots keep their own click handling
+    if (e.target.closest('.ep-nav') || e.target.closest('.ep-dot')) return
+    const posEl = e.target.closest('.ep-pos')
+    drag.current = {
+      active: true, startX: e.clientX, startPos: pos, moved: 0, lastX: e.clientX, raf: 0,
+      pointerId: e.pointerId, captured: false,
+      cardIndex: posEl ? Number(posEl.dataset.index) : null,
+    }
+    setDragging(true)
+  }
+  const onMove = (e) => {
+    const d = drag.current
+    if (!d.active) return
+    d.lastX = e.clientX
+    d.moved = Math.max(d.moved, Math.abs(e.clientX - d.startX))
+    // capture only once it's clearly a drag, so a tap still resolves cleanly
+    if (!d.captured && d.moved > 4) {
+      try { e.currentTarget.setPointerCapture(d.pointerId) } catch { /* ignore */ }
+      d.captured = true
+    }
+    if (!d.raf) {
+      d.raf = requestAnimationFrame(() => {
+        d.raf = 0
+        setPos(d.startPos - (d.lastX - d.startX) / 300)
+      })
+    }
+  }
+  const onUp = () => {
+    const d = drag.current
+    if (!d.active) return
+    d.active = false
+    if (d.raf) { cancelAnimationFrame(d.raf); d.raf = 0 }
+    setDragging(false)
+    if (d.moved < 6 && d.cardIndex != null) {
+      setSelected(d.cardIndex) // a tap → open that card's popup
+      setFlipped(false)
+    } else {
+      setPos((p) => Math.round(p))
+    }
+  }
+  const onCancel = () => {
+    const d = drag.current
+    if (!d.active) return
+    d.active = false
+    if (d.raf) { cancelAnimationFrame(d.raf); d.raf = 0 }
+    setDragging(false)
+    setPos((p) => Math.round(p))
+  }
+
+  const posStyle = (o) => {
+    const a = Math.abs(o)
+    const clamp = Math.min(a, 2.4)
+    return {
+      transform: `translateX(${o * 232}px) translateZ(${-clamp * 168}px) rotateY(${Math.max(-52, Math.min(52, -o * 40))}deg) scale(${Math.max(0.6, 1 - clamp * 0.16)})`,
+      opacity: a > 2.45 ? 0 : Math.max(0.16, 1 - clamp * 0.3),
+      zIndex: Math.round(120 - a * 10),
+      transition: dragging ? 'none' : 'transform .7s cubic-bezier(.16,.84,.44,1), opacity .7s ease',
+      pointerEvents: a > 2.45 ? 'none' : 'auto',
+    }
+  }
+
+  return (
+    <section className="ep-section" id="profiles">
+      <div style={css('position:absolute;top:0;left:12%;width:42%;height:64%;background:radial-gradient(ellipse at center,rgba(232,35,46,.08),transparent 64%);pointer-events:none')} />
+      <div style={css('position:absolute;bottom:0;right:8%;width:46%;height:62%;background:radial-gradient(ellipse at center,rgba(15,182,164,.07),transparent 64%);pointer-events:none')} />
+
+      <div style={css('position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 48px;text-align:center')}>
+        <div style={css('display:inline-flex;align-items:center;gap:10px;margin-bottom:16px')}>
+          <span style={css('width:7px;height:7px;border-radius:50%;background:#e8232e;box-shadow:0 0 10px #e8232e')} />
+          <span style={css("font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.18em;color:#e8232e")}>ATHLETE INTELLIGENCE</span>
+        </div>
+        <h2 style={css("font:800 48px/1.05 'Sora';letter-spacing:-.03em;margin:0 0 14px;text-wrap:balance")}>Elite Athlete Profiles</h2>
+        <p style={css("font:400 18px/1.6 'Sora';color:#9aa3ad;max-width:640px;margin:0 auto")}>Explore player performance, analytics, rankings, trends, and achievements across every sport — filterable by region: country, state, city, ZIP code, and radius.</p>
+      </div>
+
+      <div className="ep-stage" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}>
+        <div className="ep-ring">
+          {PLAYERS.map((p, i) => (
+            <div key={p.name} className="ep-pos" data-index={i} style={posStyle(offsetOf(i))}>
+              <div className="ep-card" style={{ '--acc-glow': `rgba(${p.rgb},.45)`, '--acc': p.accent }}>
+                <Front p={p} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <button className="ep-nav ep-prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
+        <button className="ep-nav ep-next" onClick={() => go(1)} aria-label="Next">›</button>
+      </div>
+
+      <div className="ep-dots">
+        {PLAYERS.map((p, i) => (
+          <span key={p.name} className={`ep-dot${i === active ? ' on' : ''}`} style={i === active ? css(`background:${p.accent}`) : undefined} onClick={() => goTo(i)} />
+        ))}
+      </div>
+      <div style={css("text-align:center;margin-top:18px;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#6b7480")}>DRAG · SWIPE · TAP A CARD TO EXPLORE</div>
+
+      {selected != null && (
+        <div className="ep-overlay" onClick={() => { setSelected(null); setFlipped(false) }}>
+          <div className="ep-spot" style={{ '--acc-glow': `rgba(${PLAYERS[selected].rgb},.5)`, '--acc': PLAYERS[selected].accent }} onClick={(e) => e.stopPropagation()}>
+            <div className="ep-aura" />
+            {PARTICLES.map((pt, i) => (
+              <span key={i} className="ep-particle" style={{ left: pt.l, top: pt.t, width: pt.s + 'px', height: pt.s + 'px', animationDelay: pt.d, opacity: 0.55 }} />
+            ))}
+            <button className="ep-close" onClick={() => { setSelected(null); setFlipped(false) }} aria-label="Close">✕</button>
+            <div className={`ep-flip${flipped ? ' on' : ''}`} onClick={() => setFlipped((f) => !f)}>
+              <div className="ep-face">
+                <Front p={PLAYERS[selected]} big />
+                {!flipped && (
+                  <div style={css(`position:absolute;top:74px;left:50%;transform:translateX(-50%);z-index:3;font:600 9px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:${PLAYERS[selected].accent};opacity:.9`)}>↻ TAP TO FLIP</div>
+                )}
+              </div>
+              <div className="ep-face ep-back">
+                <Back p={PLAYERS[selected]} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+}

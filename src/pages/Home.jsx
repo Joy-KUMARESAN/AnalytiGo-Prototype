@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { css } from '../utils/css.js'
+import EliteProfiles from '../components/EliteProfiles.jsx'
+import FaceOff from '../components/FaceOff.jsx'
 
 // AnalytiGo Home — a cinematic, interaction-gated experience:
 //  1. On load, only the full-screen montage plays, with a "click to begin" prompt.
@@ -322,6 +324,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===================== ELITE ATHLETE PROFILES ===================== */}
+      <EliteProfiles />
+
+      {/* ===================== FACE OFF ===================== */}
+      <FaceOff />
 
       {/* footer */}
       <footer className="ag-rv ag-rv-up ag-pad" style={css('position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:24px 48px;border-top:1px solid rgba(255,255,255,.06);background:#0a0b0d')}>

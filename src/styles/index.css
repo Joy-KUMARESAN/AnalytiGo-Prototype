@@ -514,3 +514,366 @@ button {
   border-color: rgba(var(--tc), 0.5) !important;
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.42) !important;
 }
+
+/* ============================================================
+   Elite Athlete Profiles — 3D coverflow carousel + spotlight modal
+   ============================================================ */
+.ep-section {
+  position: relative;
+  background: #0a0b0d;
+  padding: 96px 0 110px;
+  overflow: hidden;
+}
+.ep-stage {
+  position: relative;
+  height: 460px;
+  perspective: 1750px;
+  perspective-origin: 50% 46%;
+  margin: 6px auto 0;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.ep-ring {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.ep-pos {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 282px;
+  height: 396px;
+  margin: -198px 0 0 -141px;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  cursor: pointer;
+}
+.ep-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #12151b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  transition: transform 0.35s cubic-bezier(0.16, 0.84, 0.44, 1), box-shadow 0.35s ease,
+    border-color 0.35s ease;
+  transform-style: preserve-3d;
+}
+.ep-pos:hover .ep-card {
+  transform: translateZ(34px) scale(1.035);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: 0 38px 84px rgba(0, 0, 0, 0.62), 0 0 64px var(--acc-glow);
+}
+.ep-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ep-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.06) 0%,
+    transparent 28%,
+    transparent 50%,
+    rgba(8, 9, 11, 0.62) 78%,
+    rgba(8, 9, 11, 0.96) 100%
+  );
+}
+.ep-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 24, 30, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #eef1f3;
+  font: 300 26px/1 'Sora';
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.ep-nav:hover {
+  background: rgba(232, 35, 46, 0.55);
+  transform: translateY(-50%) scale(1.08);
+}
+.ep-prev {
+  left: 4%;
+}
+.ep-next {
+  right: 4%;
+}
+.ep-dots {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 28px;
+}
+.ep-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease, border-radius 0.3s ease;
+}
+.ep-dot.on {
+  width: 28px;
+  border-radius: 5px;
+}
+
+/* spotlight modal */
+.ep-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 5, 7, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: epIn 0.35s ease;
+}
+.ep-spot {
+  position: relative;
+  width: 372px;
+  max-width: 92vw;
+  height: 544px;
+  max-height: 84vh;
+  perspective: 1900px;
+  animation: epPop 0.55s cubic-bezier(0.16, 0.84, 0.44, 1);
+}
+.ep-flip {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  cursor: pointer;
+}
+.ep-flip.on {
+  transform: rotateY(180deg);
+}
+.ep-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.62), 0 0 90px var(--acc-glow);
+  background: #12151b;
+}
+.ep-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(165deg, #14181f, #0c0e12);
+}
+.ep-aura {
+  position: absolute;
+  inset: -48px;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 44%, var(--acc-glow), transparent 64%);
+  filter: blur(22px);
+  animation: epPulse 4s ease-in-out infinite;
+}
+.ep-close {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  z-index: 6;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 24, 30, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #eef1f3;
+  font: 300 20px/1 'Sora';
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.ep-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--acc);
+  pointer-events: none;
+  animation: epFloat 6s ease-in-out infinite;
+}
+@keyframes epIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes epPop {
+  from {
+    opacity: 0;
+    transform: scale(0.86) translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes epPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.07);
+  }
+}
+@keyframes epFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-18px);
+  }
+}
+@media (max-width: 560px) {
+  .ep-pos {
+    width: 234px;
+    height: 328px;
+    margin: -164px 0 0 -117px;
+  }
+  .ep-stage {
+    height: 392px;
+    perspective: 1200px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ep-pos:hover .ep-card {
+    transform: none;
+  }
+  .ep-flip {
+    transition: transform 0.3s ease;
+  }
+}
+
+/* ============================================================
+   Face Off — global player comparison over the cinematic red bg
+   ============================================================ */
+.fo-section {
+  position: relative;
+  overflow: hidden;
+  padding: 88px 0 108px;
+  background: #0a0b0d;
+}
+.fo-bg {
+  position: absolute;
+  inset: 0;
+  background: url('/assets/faceoff.jpg') center/cover no-repeat;
+}
+.fo-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      180deg,
+      rgba(8, 9, 11, 0.82) 0%,
+      rgba(12, 7, 8, 0.34) 22%,
+      rgba(12, 7, 8, 0.36) 44%,
+      rgba(8, 9, 11, 0.84) 72%,
+      #0a0b0d 100%
+    ),
+    radial-gradient(120% 85% at 50% 42%, transparent 48%, rgba(0, 0, 0, 0.45) 100%);
+}
+.fo-panel {
+  position: relative;
+  border-radius: 22px;
+  background: rgba(10, 11, 15, 0.5);
+  backdrop-filter: blur(22px) saturate(1.05);
+  -webkit-backdrop-filter: blur(22px) saturate(1.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 30px 34px 32px;
+}
+.fo-vs {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 800 21px/1 'Sora';
+  color: #fff;
+  background: linear-gradient(145deg, #e8232e, #b4151f);
+  box-shadow: 0 0 0 6px rgba(232, 35, 46, 0.12), 0 14px 40px rgba(232, 35, 46, 0.42);
+  animation: foVs 3s ease-in-out infinite;
+}
+@keyframes foVs {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.07);
+  }
+}
+.fo-row {
+  display: grid;
+  grid-template-columns: 46px 1fr 152px 1fr 46px;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 9px;
+  transition: background 0.2s ease;
+}
+.fo-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.fo-tl {
+  display: flex;
+  justify-content: flex-end;
+}
+.fo-tr {
+  display: flex;
+  justify-content: flex-start;
+}
+.fo-bar {
+  height: 9px;
+  border-radius: 5px;
+  transition: width 1s cubic-bezier(0.16, 0.84, 0.44, 1);
+  will-change: width;
+}
+.fo-chip {
+  font: 600 10px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+  color: #cfd5db;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  padding: 7px 12px;
+  border-radius: 8px;
+}
+@media (max-width: 680px) {
+  .fo-row {
+    grid-template-columns: 32px 1fr 92px 1fr 32px;
+    gap: 5px;
+  }
+}
