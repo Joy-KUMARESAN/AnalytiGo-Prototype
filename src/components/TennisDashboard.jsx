@@ -32,8 +32,8 @@ export default function TennisDashboard({ onBack }) {
       {/* sidebar */}
       <aside style={css('border-right:1px solid rgba(255,255,255,.07);padding:24px 18px;display:flex;flex-direction:column;gap:6px;background:#0c0e10')}>
         <div style={css('display:flex;align-items:center;gap:10px;padding:6px 8px 22px')}>
-          <span style={css("width:28px;height:28px;border-radius:7px;background:var(--ta);display:flex;align-items:center;justify-content:center;color:#06201d;font:800 15px/1 'Sora'")}>A</span>
-          <span style={css("font:700 17px/1 'Sora'")}>AnalytiGo</span>
+          <span style={css("width:28px;height:28px;border-radius:7px;background:var(--ta);display:flex;align-items:center;justify-content:center;color:#06201d;font:800 15px/1 'Sora'")}>L</span>
+          <span style={css("font:700 17px/1 'Sora'")}>Lvl-Up</span>
         </div>
         <div style={css("display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;background:rgba(var(--tc),.14);color:var(--ta-bright);font:600 14px/1 'Sora'")}>
           <span style={css('width:7px;height:7px;border-radius:2px;background:var(--ta)')} />Overview

@@ -82,6 +82,16 @@ button {
     box-shadow: 0 0 0 14px rgba(232, 35, 46, 0);
   }
 }
+/* homepage purple variant (sport pages keep the red glowPulse above) */
+@keyframes glowPulseP {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(166, 77, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(166, 77, 255, 0);
+  }
+}
 @keyframes drawLine {
   to {
     stroke-dashoffset: 0;
@@ -153,6 +163,27 @@ button {
 .h-footlink:hover {
   color: #fff !important;
 }
+/* homepage-only: shift the shared red hover accents to the purple/pink theme.
+   Scoped under .ag-home so /pickleball and /tennis keep their red. */
+.ag-home ::selection {
+  background: #a64dff;
+}
+.ag-home .h-signin:hover,
+.ag-home .h-social:hover {
+  color: #cf8bff !important;
+}
+.ag-home .h-outline:hover {
+  background: rgba(166, 77, 255, 0.12) !important;
+}
+.ag-home .h-card-pickle:hover {
+  box-shadow: 0 32px 70px rgba(166, 77, 255, 0.24) !important;
+}
+.ag-home .h-card-tennis:hover {
+  border-color: rgba(166, 77, 255, 0.45) !important;
+}
+.ag-home .h-feature:hover {
+  border-color: rgba(166, 77, 255, 0.45) !important;
+}
 .h-legal:hover {
   color: #c4ccd4 !important;
 }
@@ -162,6 +193,18 @@ button {
 
 /* ---------- responsive (the design is desktop-first @ 1240px) ---------- */
 @media (max-width: 1080px) {
+  /* below desktop the 100vh pin can't hold the stacked grid — collapse the
+     track so the section flows normally and the JS just shows everything */
+  .ag-pin-track {
+    height: auto !important;
+  }
+  .ag-pin-stage {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    padding: 84px 48px 92px !important;
+  }
   .ag-sport-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
@@ -177,6 +220,10 @@ button {
     display: none !important;
   }
   .ag-pad {
+    padding-left: 22px !important;
+    padding-right: 22px !important;
+  }
+  .ag-pin-stage {
     padding-left: 22px !important;
     padding-right: 22px !important;
   }
@@ -226,6 +273,8 @@ button {
   height: 100%;
   object-fit: cover;
   object-position: 60% 35%;
+  opacity: 0.55; /* dimmed so the headline reads clearly over it */
+  transition: opacity 1.4s ease;
 }
 
 /* intro veil — gentle darkening so the prompt reads; clears on start */
@@ -261,6 +310,184 @@ button {
 }
 .ag-on .ag-heroscrim {
   opacity: 1;
+}
+
+/* homepage hero — reference-style mega typography straight over the video */
+.ag-hero-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  /* strong cinematic purple-black wash: dark enough for crisp text,
+     with a purple glow pooling behind the headline */
+  background: radial-gradient(
+      120% 90% at 50% 40%,
+      rgba(155, 60, 225, 0.46),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(12, 6, 22, 0.78) 0%,
+      rgba(10, 5, 18, 0.5) 42%,
+      rgba(9, 4, 16, 0.66) 72%,
+      rgba(6, 3, 12, 0.94) 100%
+    ),
+    linear-gradient(0deg, rgba(7, 4, 13, 0.46), rgba(7, 4, 13, 0.46));
+}
+.ag-on .ag-hero-tint {
+  opacity: 1;
+}
+.ag-hero-grad {
+  /* richer multi-stop gradient with a slow light-sweep across the letters */
+  background: linear-gradient(
+    100deg,
+    #b774ff 0%,
+    #e9b3ff 24%,
+    #ffd1f0 42%,
+    #ff79d0 58%,
+    #e9b3ff 76%,
+    #b774ff 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #e0b3ff; /* fallback if background-clip:text is unsupported */
+  /* layered bloom: wide purple halo + pink inner glow + tight dark edge */
+  filter: drop-shadow(0 10px 46px rgba(190, 100, 255, 0.62))
+    drop-shadow(0 0 22px rgba(255, 110, 200, 0.4))
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.55));
+  animation: agSheen 9s ease-in-out infinite;
+}
+@keyframes agSheen {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* frosted glass between the video and the content for readability + integration */
+.ag-hero-frost {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  backdrop-filter: blur(5px) saturate(1.16) brightness(0.92);
+  -webkit-backdrop-filter: blur(5px) saturate(1.16) brightness(0.92);
+  background: rgba(9, 5, 16, 0.1);
+}
+.ag-on .ag-hero-frost {
+  opacity: 1;
+}
+
+/* animated brand-color lighting (soft moving glow behind the headline) */
+.ag-hero-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+.ag-hero-aurora {
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+  mix-blend-mode: screen;
+  filter: blur(46px);
+  background: radial-gradient(38% 46% at 32% 42%, rgba(166, 77, 255, 0.42), transparent 60%),
+    radial-gradient(34% 42% at 70% 58%, rgba(255, 95, 196, 0.34), transparent 62%),
+    radial-gradient(30% 38% at 54% 30%, rgba(120, 60, 220, 0.32), transparent 60%);
+  animation: agAurora 20s ease-in-out infinite alternate;
+}
+.ag-on .ag-hero-aurora {
+  opacity: 0.92;
+}
+@keyframes agAurora {
+  0% { transform: translate3d(-3%, -2%, 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(3%, 2%, 0) scale(1.12) rotate(4deg); }
+  100% { transform: translate3d(-2%, 3%, 0) scale(1.06) rotate(-3deg); }
+}
+
+/* ambient floating motes */
+.ag-hero-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ag-hero-particles i {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 255, 0.95), rgba(166, 77, 255, 0.25) 55%, transparent 72%);
+  box-shadow: 0 0 10px rgba(214, 150, 255, 0.6);
+  opacity: 0;
+  transition: opacity 1.4s ease;
+  animation-name: agMote;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.ag-on .ag-hero-particles i {
+  opacity: var(--o, 0.45);
+}
+@keyframes agMote {
+  0% { transform: translateY(8px) translateX(0); }
+  50% { transform: translateY(-22px) translateX(8px); }
+  100% { transform: translateY(8px) translateX(0); }
+}
+
+/* cinematic edge vignette */
+.ag-hero-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(125% 105% at 50% 42%, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+/* the headline block breathes gently so it floats above the footage */
+.ag-hero-copy {
+  animation: agHeroFloat 8s ease-in-out infinite;
+}
+@keyframes agHeroFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* scroll-revealed sport shots framing the hero headline */
+.ag-hero-shot {
+  position: absolute;
+  z-index: 1; /* behind the headline/nav/stats (z-index 2), above the bg fx */
+  width: clamp(160px, 18.5vw, 285px);
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(214, 150, 255, 0.3);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6), 0 0 42px rgba(166, 77, 255, 0.3);
+  pointer-events: none;
+}
+.ag-hero-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* desktop-only experience: below this the hero is a normal block, shots hidden */
+@media (max-width: 1080px) {
+  .ag-hero-track {
+    height: auto !important;
+  }
+  .ag-hero-sticky {
+    position: static !important;
+    height: auto !important;
+    min-height: 100vh;
+  }
+  .ag-hero-shot {
+    display: none !important;
+  }
 }
 
 /* "click anywhere to begin" prompt */
@@ -306,13 +533,13 @@ button {
 }
 @keyframes introGlow {
   0% {
-    box-shadow: 0 0 0 0 rgba(232, 35, 46, 0.5);
+    box-shadow: 0 0 0 0 rgba(166, 77, 255, 0.5);
   }
   70% {
-    box-shadow: 0 0 0 22px rgba(232, 35, 46, 0);
+    box-shadow: 0 0 0 22px rgba(166, 77, 255, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(232, 35, 46, 0);
+    box-shadow: 0 0 0 0 rgba(166, 77, 255, 0);
   }
 }
 @keyframes promptPulse {
@@ -520,7 +747,17 @@ button {
    ============================================================ */
 .ep-section {
   position: relative;
-  background: #0a0b0d;
+  /* cinematic section backdrop: the image fills the whole section (cover, centered)
+     with a soft dark scrim so the heading and cards stay readable */
+  background: linear-gradient(
+      180deg,
+      rgba(10, 11, 13, 0.82) 0%,
+      rgba(10, 11, 13, 0.52) 28%,
+      rgba(10, 11, 13, 0.46) 60%,
+      rgba(10, 11, 13, 0.82) 100%
+    ),
+    url('/assets/profiles-bg.png') center / cover no-repeat;
+  background-color: #0a0b0d;
   padding: 96px 0 110px;
   overflow: hidden;
 }
@@ -533,6 +770,104 @@ button {
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
+}
+/* ---- Elite Profiles intro: premium 3D tennis-ball gate ---- */
+.ep-ball-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.9s ease;
+}
+.ep-ball-stage.fading {
+  opacity: 0;
+  pointer-events: none;
+}
+.ep-ball-wrap {
+  position: relative;
+  width: 440px;
+  height: 440px;
+  max-width: 80vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.ep-ball-canvas {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.ep-ball-canvas.is-loaded {
+  opacity: 1;
+}
+.ep-ball-glow {
+  position: absolute;
+  inset: -4%;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 46%,
+    rgba(166, 77, 255, 0.42),
+    rgba(166, 77, 255, 0.12) 42%,
+    transparent 66%
+  );
+  filter: blur(10px);
+  animation: epBallPulse 4.5s ease-in-out infinite;
+}
+@keyframes epBallPulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.ep-ball-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  width: 50%;
+  height: 34px;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6), transparent 70%);
+  filter: blur(8px);
+  animation: epShadowPulse 4.5s ease-in-out infinite;
+}
+@keyframes epShadowPulse {
+  0%, 100% { opacity: 0.55; width: 50%; }
+  50% { opacity: 0.4; width: 44%; }
+}
+.ep-ball-prompt {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  white-space: nowrap;
+  font: 600 12px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e6c2ff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+  animation: epPromptPulse 2.4s ease-in-out infinite;
+}
+.ep-ball-ring {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a64dff;
+  box-shadow: 0 0 12px #a64dff;
+}
+@keyframes epPromptPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 .ep-ring {
   position: absolute;
@@ -608,7 +943,7 @@ button {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 .ep-nav:hover {
-  background: rgba(232, 35, 46, 0.55);
+  background: rgba(166, 77, 255, 0.55);
   transform: translateY(-50%) scale(1.08);
 }
 .ep-prev {
@@ -780,29 +1115,174 @@ button {
 /* ============================================================
    Face Off — global player comparison over the cinematic red bg
    ============================================================ */
+/* Face Off — scroll-pinned cinematic reveal */
 .fo-section {
   position: relative;
-  overflow: hidden;
-  padding: 88px 0 108px;
-  background: #0a0b0d;
+  background: #07060c;
 }
-.fo-bg {
+.fo-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #07060c;
+}
+/* two halves of the same backdrop; each clipped to one side, sliding in opposite ways */
+.fo-half {
   position: absolute;
-  inset: 0;
-  background: url('/assets/faceoff.jpg') center/cover no-repeat;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('/assets/faceoff-bg.png') center / cover no-repeat;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+}
+.fo-half-l {
+  clip-path: inset(0 50% 0 0);
+}
+.fo-half-r {
+  clip-path: inset(0 0 0 50%);
 }
 .fo-scrim {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background: linear-gradient(
       180deg,
-      rgba(8, 9, 11, 0.82) 0%,
-      rgba(12, 7, 8, 0.34) 22%,
-      rgba(12, 7, 8, 0.36) 44%,
-      rgba(8, 9, 11, 0.84) 72%,
-      #0a0b0d 100%
+      rgba(8, 6, 14, 0.78) 0%,
+      rgba(10, 7, 16, 0.34) 24%,
+      rgba(10, 7, 16, 0.36) 50%,
+      rgba(8, 6, 14, 0.82) 76%,
+      #07060c 100%
     ),
-    radial-gradient(120% 85% at 50% 42%, transparent 48%, rgba(0, 0, 0, 0.45) 100%);
+    radial-gradient(120% 88% at 50% 44%, transparent 46%, rgba(0, 0, 0, 0.52) 100%);
+}
+/* soft purple volumetric glow pooling in the centre */
+.fo-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(46% 52% at 50% 50%, rgba(166, 77, 255, 0.32), transparent 70%);
+  mix-blend-mode: screen;
+}
+.fo-particle {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  background: rgba(220, 170, 255, 0.75);
+  box-shadow: 0 0 9px rgba(166, 77, 255, 0.85);
+  pointer-events: none;
+  opacity: 0.5;
+  animation: foFloat 7s ease-in-out infinite;
+}
+@keyframes foFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+/* Stage-2 AI analysis panel */
+.fo-analyze {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  width: min(330px, 82vw);
+  padding: 22px 24px 18px;
+  border-radius: 18px;
+  text-align: center;
+  background: rgba(12, 8, 20, 0.6);
+  backdrop-filter: blur(16px) saturate(1.1);
+  -webkit-backdrop-filter: blur(16px) saturate(1.1);
+  border: 1px solid rgba(166, 77, 255, 0.4);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 50px rgba(166, 77, 255, 0.3);
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.fo-analyze-orb {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 800 18px/1 'Sora';
+  color: #fff;
+  background: linear-gradient(145deg, #a64dff, #ff5fc4);
+  animation: foVsPulse 2.2s ease-in-out infinite;
+}
+.fo-analyze-title {
+  font: 700 11px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.2em;
+  color: #cf8bff;
+  margin-bottom: 16px;
+}
+.fo-analyze-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 11px;
+  text-align: left;
+}
+.fo-analyze-row span {
+  font: 600 9px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+  color: #aab2bb;
+}
+.fo-analyze-bartrack {
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+.fo-analyze-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #a64dff, #ff5fc4);
+  box-shadow: 0 0 10px rgba(166, 77, 255, 0.7);
+}
+.fo-analyze-foot {
+  margin-top: 10px;
+  font: 600 9px/1 'JetBrains Mono', monospace;
+  letter-spacing: 0.16em;
+  color: #8b95a1;
+}
+@keyframes foVsPulse {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(166, 77, 255, 0.14), 0 12px 30px rgba(166, 77, 255, 0.45); }
+  50% { box-shadow: 0 0 0 13px rgba(166, 77, 255, 0), 0 12px 36px rgba(166, 77, 255, 0.6); }
+}
+/* Stage-3 full comparison wrapper */
+.fo-final {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding-top: 70px;
+  will-change: opacity, transform;
+}
+/* desktop-only pin; below this it's a normal section with the static backdrop */
+@media (max-width: 1080px) {
+  .fo-track {
+    height: auto !important;
+  }
+  .fo-stage {
+    position: static !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding: 84px 0 100px;
+    background: linear-gradient(180deg, rgba(8, 6, 14, 0.82), rgba(8, 6, 14, 0.5) 50%, #07060c 100%),
+      url('/assets/faceoff-bg.png') center / cover no-repeat;
+  }
+  .fo-half,
+  .fo-analyze {
+    display: none !important;
+  }
+  .fo-final {
+    opacity: 1 !important;
+    transform: none !important;
+    padding-top: 0;
+  }
 }
 .fo-panel {
   position: relative;
@@ -823,8 +1303,8 @@ button {
   justify-content: center;
   font: 800 21px/1 'Sora';
   color: #fff;
-  background: linear-gradient(145deg, #e8232e, #b4151f);
-  box-shadow: 0 0 0 6px rgba(232, 35, 46, 0.12), 0 14px 40px rgba(232, 35, 46, 0.42);
+  background: linear-gradient(145deg, #a64dff, #ff5fc4);
+  box-shadow: 0 0 0 6px rgba(166, 77, 255, 0.14), 0 14px 40px rgba(166, 77, 255, 0.45);
   animation: foVs 3s ease-in-out infinite;
 }
 @keyframes foVs {

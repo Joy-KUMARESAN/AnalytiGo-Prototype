@@ -20,8 +20,8 @@ export default function LandingView({ navRef, videoRef, openDashboard }) {
       {/* NAV */}
       <nav ref={navRef} style={css('position:fixed;top:0;left:0;right:0;z-index:70;display:flex;align-items:center;justify-content:space-between;padding:20px 48px;background:linear-gradient(180deg,rgba(8,9,11,.55) 0%,rgba(8,9,11,.32) 38%,rgba(8,9,11,.1) 70%,transparent 100%);border:none;transition:background .25s,padding .25s,backdrop-filter .25s')}>
         <Link to="/" style={css('display:flex;align-items:center;gap:11px')}>
-          <span style={css("width:30px;height:30px;border-radius:8px;background:#e8232e;display:flex;align-items:center;justify-content:center;color:#fff;font:800 17px/1 'Sora'")}>A</span>
-          <span style={css("font:700 20px/1 'Sora';letter-spacing:-.01em")}>AnalytiGo</span>
+          <span style={css("width:30px;height:30px;border-radius:8px;background:#e8232e;display:flex;align-items:center;justify-content:center;color:#fff;font:800 17px/1 'Sora'")}>L</span>
+          <span style={css("font:700 20px/1 'Sora';letter-spacing:-.01em")}>Lvl-Up</span>
         </Link>
         <div className="ag-nav-links" style={css('display:flex;align-items:center;gap:34px')}>
           {NAV_LINKS.map((label) => (

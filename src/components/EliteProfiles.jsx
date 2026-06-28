@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { css } from '../utils/css.js'
+import TennisBall from './TennisBall.jsx'
 
 // Elite Athlete Profiles — a premium 3D coverflow carousel of player cards with
 // drag/swipe, infinite looping, hover lift, and a cinematic spotlight modal that
@@ -22,7 +23,7 @@ const ICONS = {
 
 const PLAYERS = [
   {
-    name: 'Marcus Vale', sport: 'Pickleball', accent: '#e8232e', rgb: '232,35,46',
+    name: 'Marcus Vale', sport: 'Pickleball', accent: '#a64dff', rgb: '166,77,255',
     rating: 96, winRate: 84, ranking: 2, image: '/assets/card-pickleball.jpg',
     strengths: ['Kitchen Play', 'Third-Shot Drop', 'Hand Speed'],
     weaknesses: ['Deep Lobs', 'Backhand Dinks'],
@@ -193,6 +194,11 @@ export default function EliteProfiles() {
   const [dragging, setDragging] = useState(false)
   const [selected, setSelected] = useState(null)
   const [flipped, setFlipped] = useState(false)
+  // intro gate: 'idle' = only the 3D ball, 'revealing' = cards emerge from it,
+  // 'done' = the existing carousel is live (unchanged from here on).
+  const [phase, setPhase] = useState('idle')
+  const ready = phase === 'done'
+  const posRefs = useRef([])
   const drag = useRef({ active: false, startX: 0, startPos: 0, moved: 0, lastX: 0, raf: 0 })
 
   const active = ((Math.round(pos) % N) + N) % N
@@ -218,6 +224,7 @@ export default function EliteProfiles() {
   }
 
   const onDown = (e) => {
+    if (phase !== 'done') return // carousel drag only after the intro reveal
     // let the nav arrows / dots keep their own click handling
     if (e.target.closest('.ep-nav') || e.target.closest('.ep-dot')) return
     const posEl = e.target.closest('.ep-pos')
@@ -279,40 +286,108 @@ export default function EliteProfiles() {
     }
   }
 
+  // Cinematic intro: cards are "released" from inside the ball — each flies out on a
+  // curved, spinning arc and settles into its real carousel slot. Driven imperatively
+  // for 60fps; on completion we hand the exact final styles back so the existing
+  // coverflow/drag behavior takes over untouched.
+  const reveal = () => {
+    if (phase !== 'idle') return
+    // seed every card at the ball's center (collapsed, deep, invisible) before paint
+    posRefs.current.forEach((el, i) => {
+      if (!el) return
+      el.style.transition = 'none'
+      el.style.transform = 'translateZ(-360px) scale(.12)'
+      el.style.opacity = '0'
+      el.style.filter = 'blur(8px)'
+      el.style.zIndex = String(Math.round(120 - Math.abs(offsetOf(i)) * 10))
+    })
+    setPhase('revealing')
+    const DUR = 1950
+    const start = performance.now()
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+    const tick = (now) => {
+      const g = Math.min(1, (now - start) / DUR)
+      posRefs.current.forEach((el, i) => {
+        if (!el) return
+        const o = offsetOf(i)
+        const a = Math.abs(o)
+        const clamp = Math.min(a, 2.4)
+        const tx = o * 232
+        const tz = -clamp * 168
+        const ry = Math.max(-52, Math.min(52, -o * 40))
+        const sc = Math.max(0.6, 1 - clamp * 0.16)
+        const op = a > 2.45 ? 0 : Math.max(0.16, 1 - clamp * 0.3)
+        const stg = i * 0.1 // stagger the release per card
+        const u = easeOut(Math.max(0, Math.min(1, (g - stg) / (1 - 0.3))))
+        const cx = tx * u
+        const cz = -360 * (1 - u) + tz * u
+        const arcY = -Math.sin(u * Math.PI) * (72 + 26 * a) // curved hop out
+        const rz = (1 - u) * (o * 22 + 16) // decaying spin → orbital feel
+        const cry = ry * u
+        const csc = 0.12 * (1 - u) + sc * u
+        const blur = (1 - u) * 7
+        el.style.transform = `translateX(${cx.toFixed(1)}px) translateY(${arcY.toFixed(1)}px) translateZ(${cz.toFixed(1)}px) rotateY(${cry.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg) scale(${csc.toFixed(3)})`
+        el.style.opacity = String((op * u).toFixed(3))
+        el.style.filter = blur > 0.1 ? `blur(${blur.toFixed(2)}px)` : 'none'
+      })
+      if (g < 1) requestAnimationFrame(tick)
+      else {
+        // hand exact final styles back to the carousel (transition restored)
+        posRefs.current.forEach((el, i) => {
+          if (!el) return
+          const s = posStyle(offsetOf(i))
+          el.style.transition = s.transition
+          el.style.transform = s.transform
+          el.style.opacity = String(s.opacity)
+          el.style.zIndex = String(s.zIndex)
+          el.style.pointerEvents = s.pointerEvents
+          el.style.filter = 'none'
+        })
+        setPhase('done')
+      }
+    }
+    requestAnimationFrame(tick)
+  }
+
   return (
     <section className="ep-section" id="profiles">
-      <div style={css('position:absolute;top:0;left:12%;width:42%;height:64%;background:radial-gradient(ellipse at center,rgba(232,35,46,.08),transparent 64%);pointer-events:none')} />
+      <div style={css('position:absolute;top:0;left:12%;width:42%;height:64%;background:radial-gradient(ellipse at center,rgba(166,77,255,.08),transparent 64%);pointer-events:none')} />
       <div style={css('position:absolute;bottom:0;right:8%;width:46%;height:62%;background:radial-gradient(ellipse at center,rgba(15,182,164,.07),transparent 64%);pointer-events:none')} />
 
       <div style={css('position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 48px;text-align:center')}>
         <div style={css('display:inline-flex;align-items:center;gap:10px;margin-bottom:16px')}>
-          <span style={css('width:7px;height:7px;border-radius:50%;background:#e8232e;box-shadow:0 0 10px #e8232e')} />
-          <span style={css("font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.18em;color:#e8232e")}>ATHLETE INTELLIGENCE</span>
+          <span style={css('width:7px;height:7px;border-radius:50%;background:#a64dff;box-shadow:0 0 10px #a64dff')} />
+          <span style={css("font:600 12px/1 'JetBrains Mono',monospace;letter-spacing:.18em;color:#a64dff")}>ATHLETE INTELLIGENCE</span>
         </div>
         <h2 style={css("font:800 48px/1.05 'Sora';letter-spacing:-.03em;margin:0 0 14px;text-wrap:balance")}>Elite Athlete Profiles</h2>
         <p style={css("font:400 18px/1.6 'Sora';color:#9aa3ad;max-width:640px;margin:0 auto")}>Explore player performance, analytics, rankings, trends, and achievements across every sport — filterable by region: country, state, city, ZIP code, and radius.</p>
       </div>
 
       <div className="ep-stage" onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel}>
-        <div className="ep-ring">
+        <div className="ep-ring" style={{ opacity: phase === 'idle' ? 0 : 1, transition: 'opacity .4s ease' }}>
           {PLAYERS.map((p, i) => (
-            <div key={p.name} className="ep-pos" data-index={i} style={posStyle(offsetOf(i))}>
+            <div key={p.name} ref={(el) => { posRefs.current[i] = el }} className="ep-pos" data-index={i} style={posStyle(offsetOf(i))}>
               <div className="ep-card" style={{ '--acc-glow': `rgba(${p.rgb},.45)`, '--acc': p.accent }}>
                 <Front p={p} />
               </div>
             </div>
           ))}
         </div>
-        <button className="ep-nav ep-prev" onClick={() => go(-1)} aria-label="Previous">‹</button>
-        <button className="ep-nav ep-next" onClick={() => go(1)} aria-label="Next">›</button>
+        {phase !== 'done' && (
+          <div className={`ep-ball-stage${phase === 'revealing' ? ' fading' : ''}`}>
+            <TennisBall onReveal={reveal} />
+          </div>
+        )}
+        <button className="ep-nav ep-prev" onClick={() => go(-1)} aria-label="Previous" style={{ opacity: ready ? 1 : 0, pointerEvents: ready ? 'auto' : 'none', transition: 'opacity .6s ease' }}>‹</button>
+        <button className="ep-nav ep-next" onClick={() => go(1)} aria-label="Next" style={{ opacity: ready ? 1 : 0, pointerEvents: ready ? 'auto' : 'none', transition: 'opacity .6s ease' }}>›</button>
       </div>
 
-      <div className="ep-dots">
+      <div className="ep-dots" style={{ opacity: ready ? 1 : 0, pointerEvents: ready ? 'auto' : 'none', transition: 'opacity .6s ease' }}>
         {PLAYERS.map((p, i) => (
           <span key={p.name} className={`ep-dot${i === active ? ' on' : ''}`} style={i === active ? css(`background:${p.accent}`) : undefined} onClick={() => goTo(i)} />
         ))}
       </div>
-      <div style={css("text-align:center;margin-top:18px;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#6b7480")}>DRAG · SWIPE · TAP A CARD TO EXPLORE</div>
+      <div style={{ ...css("text-align:center;margin-top:18px;font:500 11px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:#6b7480"), opacity: ready ? 1 : 0, transition: 'opacity .6s ease' }}>DRAG · SWIPE · TAP A CARD TO EXPLORE</div>
 
       {selected != null && (
         <div className="ep-overlay" onClick={() => { setSelected(null); setFlipped(false) }}>
